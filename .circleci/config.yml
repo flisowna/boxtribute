@@ -313,7 +313,7 @@ workflows:
             - test-flask
           filters:
             branches:
-              only: master
+              only: performance/786-production-level-optimizations
 
       # deploy to demo
       - deploy:
