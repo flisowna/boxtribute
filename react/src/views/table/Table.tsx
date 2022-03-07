@@ -52,126 +52,129 @@ query Location($locationId: ID!) {
 //       </Box>
 //     </Box>
 //   );
+type ProductRow = {
+  name: string,
+  price: number
+}
+
+type UnterTableProps = {
+  tableData: ProductRow[]
+}
 
 
-const Table = () => {
+const UnterTable = (props: UnterTableProps) => {
 
-    const locationId = 1
-
-      const { loading, error, data: data2 } = useQuery(LOCATION_QUERY, {
-    variables: {
-      locationId,
-    },
-  });
-
-  type Cols = { col1: string; col2: string };
-
-
-    const data = React.useMemo(
-        (): Cols[] => [
-          {
-            col1: 'Hello',
-            col2: 'World',
-          },
-          {
-            col1: 'react-table',
-            col2: 'rocks',
-          },
-          {
-            col1: 'whatever',
-            col2: 'you want',
-          },
-        ],
-        []
-      )
-    
-      // const columns = React.useMemo(
-      //   () => [
-      //     {
-      //       Header: 'Column 1',
-      //       accessor: 'col1', // accessor is the "key" in the data
-      //     },
-      //     {
-      //       Header: 'Column 2',
-      //       accessor: 'col2',
-      //     },
-      //   ],
-      //   []
-      // )
-
-
-
-      const columns: Column<{ col1: string; col2: string }>[] = React.useMemo(
+      const columns: Column<ProductRow>[] = React.useMemo(
         () => [
           {
-            Header: "Column 1",
-            accessor: "col1" // accessor is the "key" in the data
+            Header: "Name",
+            accessor: "name" // accessor is the "key" in the data
           },
           {
-            Header: "Column 2",
-            accessor: "col2"
+            Header: "Price",
+            accessor: "price"
           }
         ],
         []
       );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({ columns, data: props.tableData })
     
-    
-      const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow,
-      } = useTable({ columns, data })
-    console.log(data)
-      return (
+
+
+  return (
           
-        <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
-          <thead>
-            {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                  <th
-                    {...column.getHeaderProps()}
+    <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+      <thead>
+        {headerGroups.map(headerGroup => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(column => (
+              <th
+                {...column.getHeaderProps()}
+                style={{
+                  borderBottom: 'solid 3px red',
+                  background: 'aliceblue',
+                  color: 'black',
+                  fontWeight: 'bold',
+                }}
+              >
+                {column.render('Header')}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map(row => {
+          prepareRow(row)
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map(cell => {
+                return (
+                  <td
+                    {...cell.getCellProps()}
                     style={{
-                      borderBottom: 'solid 3px red',
-                      background: 'aliceblue',
-                      color: 'black',
-                      fontWeight: 'bold',
+                      padding: '10px',
+                      border: 'solid 1px gray',
+                      background: 'papayawhip',
                     }}
                   >
-                    {column.render('Header')}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map(row => {
-              prepareRow(row)
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => {
-                    return (
-                      <td
-                        {...cell.getCellProps()}
-                        style={{
-                          padding: '10px',
-                          border: 'solid 1px gray',
-                          background: 'papayawhip',
-                        }}
-                      >
-                        {cell.render('Cell')}
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      // <>hallo</>
-        )
-};
+                    {cell.render('Cell')}
+                  </td>
+                )
+              })}
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+    )
+  
+}
+
+
+
+const Table = () => {
+
+  const locationId = 1
+
+  const { loading, error, data: data2 } = useQuery(LOCATION_QUERY, {
+    variables: {
+      locationId,
+    },
+  });
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    console.error(error);
+    return <div>Error!</div>;
+  }
+
+
+  console.log("data2", data2)
+  const data3 = data2?.location.boxes.elements.map(element => ({
+      name: element.product.name,
+      price: element.product.price
+    }
+  ));
+  
+  console.log("data3", data3)
+
+
+  return <UnterTable tableData={data3} />;
+
+
+}
+
+
+
+
 
 export default Table;
