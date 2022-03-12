@@ -1,10 +1,10 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { useParams } from "react-router-dom";
-import { Box, Heading, ListItem, UnorderedList } from "@chakra-ui/react";
-import { Column, useTable, useSortBy } from "react-table";
+import { Column, useTable, useSortBy, useFilters, useAsyncDebounce, useGlobalFilter } from "react-table";
 import { Table, Thead, Tbody, Tr, Th, Td, chakra } from '@chakra-ui/react'
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons'
+import { GlobalFilter } from "./GlobalFilter";
+import { SelectColumnFilter } from "./SelectColumnFilter";
 
 const BASE_QUERY = gql`
   query Base($baseId: ID!) {
@@ -35,30 +35,7 @@ const BASE_QUERY = gql`
   }
 `;
 
-//
-
-//   if (loading) return <div>Loading...</div>;
-//   if (error) return <div>Error: {JSON.stringify(error)}</div>;
-//   if (data.location == null) return <Box>No location found</Box>;
-
-//   return (
-//     <Box>
-//       <Heading>
-//         Location '{data.location.name}' ({data.location.id})
-//       </Heading>
-//       <Box>
-//         <Heading as="h3">{data?.location?.boxes.length} Boxes in this location</Heading>
-//         <UnorderedList>
-//           {data?.location?.boxes.elements.map((box) => (
-//             <ListItem>
-//               {box.id} - {box.product.name}
-//             </ListItem>
-//           ))}
-//         </UnorderedList>
-//       </Box>
-//     </Box>
-//   );
-type ProductRow = {
+export type ProductRow = {
   name: string;
   id: number;
   gender: string;
@@ -75,7 +52,7 @@ const UnterTable = (props: UnterTableProps) => {
     () => [
       {
         Header: "Product",
-        accessor: "name", // accessor is the "key" in the data
+        accessor: "name", 
       },
       {
         Header: "Box ID",
@@ -84,6 +61,8 @@ const UnterTable = (props: UnterTableProps) => {
       {
         Header: "Gender",
         accessor: "gender",
+        Filter: SelectColumnFilter,
+        filter: 'includes',
       },
       {
         Header: "Size",
@@ -97,14 +76,35 @@ const UnterTable = (props: UnterTableProps) => {
     [],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state: { globalFilter },
+  preGlobalFilteredRows,
+  setGlobalFilter } = useTable({
     columns,
     data: props.tableData,
-  }, useSortBy);
+  }, useFilters, useGlobalFilter, useSortBy);
 
   return (
-    <Table {...getTableProps()} style={{ border: "solid 1px blue" }}>
+    <Table {...getTableProps()} >
       <Thead>
+      <Tr>
+          <Th>
+            <GlobalFilter
+              preGlobalFilteredRows={preGlobalFilteredRows}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
+                  {headerGroups.map((headerGroup) =>
+        headerGroup.headers.map((column) =>
+          column.Filter ? (
+            <div key={column.id}>
+              <label htmlFor={column.id}>{column.render("Header")}: </label>
+              {column.render("Filter")}
+            </div>
+          ) : null
+        )
+      )}
+          </Th>
+        </Tr>
         {headerGroups.map((headerGroup) => (
           <Tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
