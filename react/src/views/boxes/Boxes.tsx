@@ -5,6 +5,7 @@ import { Table, Thead, Tbody, Tr, Th, Td, chakra, Button } from "@chakra-ui/reac
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { GlobalFilter } from "./GlobalFilter";
 import { SelectColumnFilter } from "./SelectColumnFilter";
+import { BoxesForBaseQuery } from "../../generated/graphql";
 
 const BOXES_FOR_BASE_QUERY = gql`
   query BoxesForBase($baseId: ID!) {
@@ -13,8 +14,8 @@ const BOXES_FOR_BASE_QUERY = gql`
         boxes {
           totalCount
           elements {
-            state
             id
+            state
             product {
               gender
               name
@@ -28,21 +29,6 @@ const BOXES_FOR_BASE_QUERY = gql`
   }
 `;
 
-
-const graphqlToTableTransformer = (boxesQueryResult: any) => boxesQueryResult?.base.locations.flatMap((location) =>
-location.boxes.elements.map((element) => ({
-  name: element.product.name,
-  id: element.id,
-  sizes: element.product.sizes,
-  gender: element.product.gender,
-  items: element.items,
-  state: element.state,
-})),
-);
-
-
-
-
 export type ProductRow = {
   name: string;
   id: number;
@@ -52,12 +38,11 @@ export type ProductRow = {
   state: string;
 };
 
-
-type UnterTableProps = {
+type BoxesTableProps = {
   tableData: ProductRow[];
 };
 
-const UnterTable = (props: UnterTableProps) => {
+const BoxesTable = (props: BoxesTableProps) => {
   const filterTypes = React.useMemo(
     () => ({
       text: (rows, id, filterValue) => {
@@ -183,14 +168,22 @@ const UnterTable = (props: UnterTableProps) => {
   );
 };
 
+const graphqlToTableTransformer = (boxesQueryResult: BoxesForBaseQuery) =>
+  boxesQueryResult?.base?.locations?.flatMap((location) =>
+    location?.boxes?.elements.map((element) => ({
+      name: element.product?.name,
+      id: element.id,
+      sizes: element.product?.sizes,
+      gender: element.product?.gender,
+      items: element.items,
+      state: element.state,
+    })),
+  );
+
 const Boxes = () => {
   const baseId = 1;
 
-  const {
-    loading,
-    error,
-    data,
-  } = useQuery(BOXES_FOR_BASE_QUERY, {
+  const { loading, error, data } = useQuery<BoxesForBaseQuery>(BOXES_FOR_BASE_QUERY, {
     variables: {
       baseId,
     },
@@ -198,14 +191,21 @@ const Boxes = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
-  if (error) {
+  if (error || data == null) {
     console.error(error);
     return <div>Error!</div>;
   }
 
-  const tableData = graphqlToTableTransformer(data)
+  const tableData = graphqlToTableTransformer(data);
 
-  return <UnterTable tableData={tableData} />;
+  if (tableData == null) {
+    console.error("tableData is null/undefined");
+    return <div>Error!</div>;
+  }
+
+
+
+  return <BoxesTable tableData={tableData} />;
 };
 
 export default Boxes;

@@ -770,6 +770,13 @@ export type User = {
   validLastDay?: Maybe<Scalars['Date']>;
 };
 
+export type BoxesForBaseQueryVariables = Exact<{
+  baseId: Scalars['ID'];
+}>;
+
+
+export type BoxesForBaseQuery = { __typename?: 'Query', base?: { __typename?: 'Base', locations?: Array<{ __typename?: 'Location', boxes?: { __typename?: 'BoxPage', totalCount: number, elements: Array<{ __typename?: 'Box', id: string, state: BoxState, items: number, product?: { __typename?: 'Product', gender?: ProductGender | null, name: string, sizes: Array<string> } | null }> } | null }> | null } | null };
+
 export type LocationQueryVariables = Exact<{
   locationId: Scalars['ID'];
 }>;
