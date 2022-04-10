@@ -177,16 +177,16 @@ describe("Boxes view", () => {
       });
       it("only shows entries in the table that match the filter search term", async () => {
         await waitFor(() => {
-          const firstEntryInOriginalRowSet = screen.queryByRole("gridcell", {
+          const nonBlanketEntryInOriginalRowSet = screen.queryByRole("gridcell", {
             name: "Top 2-6 Months",
           });
-          expect(firstEntryInOriginalRowSet).toBeNull();
+          expect(nonBlanketEntryInOriginalRowSet).toBeNull();
         });
 
-        const blanketProduct = screen.queryByRole("gridcell", {
+        const blanketProductEntryInFilteredRowSet = screen.queryByRole("gridcell", {
           name: "Blanket",
         });
-        expect(blanketProduct).toBeInTheDocument();
+        expect(blanketProductEntryInFilteredRowSet).toBeInTheDocument();
       });
     });
   });
@@ -200,10 +200,9 @@ describe("Boxes view", () => {
       expect(nonWomenEntryInOriginalRowSet).toBeInTheDocument();
     });
 
-    describe("applying the search term 'Blanket' in the filter", () => {
+    describe("select 'Women' for the Gender dropdown", () => {
       beforeEach(() => {
         const genderFilter = screen.getByLabelText("Gender:");
-
         fireEvent.change(genderFilter, { target: { value: "Women" } });
       });
 
