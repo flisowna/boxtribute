@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Boxes from "views/boxes/Boxes";
+import Transfers from "views/transfers/Transfers";
 import Locations from "views/locations/Locations";
 import BTLocation from "views/locations/BTLocation";
 import Layout from "Layout";
@@ -53,6 +54,7 @@ const App = () => {
               <Route path=":locationId" element={<BTLocation />} />
             </Route>
             <Route path="boxes" element={<Boxes />} />
+            <Route path="transfers" element={<Transfers />} />
           </Route>
         </Route>
       </Route>

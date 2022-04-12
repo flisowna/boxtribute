@@ -840,7 +840,7 @@ export type User = {
   validLastDay?: Maybe<Scalars['Date']>;
 };
 
-export type BasesQueryVariables = Exact<{ [key: string]: never; }>;
+export type BasesQueryVariables = Exact<{ organisationId: Scalars['ID']; }>;
 
 
 export type BasesQuery = { __typename?: 'Query', bases: Array<{ __typename?: 'Base', id: string, name: string }> };
