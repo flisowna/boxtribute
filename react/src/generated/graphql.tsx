@@ -840,7 +840,7 @@ export type User = {
   validLastDay?: Maybe<Scalars['Date']>;
 };
 
-export type BasesQueryVariables = Exact<{ organisationId: Scalars['ID']; }>;
+export type BasesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type BasesQuery = { __typename?: 'Query', bases: Array<{ __typename?: 'Base', id: string, name: string }> };
@@ -865,3 +865,8 @@ export type LocationsForBaseQueryVariables = Exact<{
 
 
 export type LocationsForBaseQuery = { __typename?: 'Query', base?: { __typename?: 'Base', locations?: Array<{ __typename?: 'Location', id: string, name?: string | null }> | null } | null };
+
+export type OrganisationsAndBasesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OrganisationsAndBasesQuery = { __typename?: 'Query', organisations: Array<{ __typename?: 'Organisation', name: string, id: string, bases?: Array<{ __typename?: 'Base', id: string, name: string }> | null }> };
