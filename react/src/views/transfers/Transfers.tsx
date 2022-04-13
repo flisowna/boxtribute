@@ -2,7 +2,7 @@ import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Link, useParams } from "react-router-dom";
 import { Box, Heading, ListItem, UnorderedList } from "@chakra-ui/react";
-import { Organisation } from "generated/graphql";
+import { Organisation, OrganisationsAndBasesQuery } from "generated/graphql";
 
 
 
@@ -22,17 +22,20 @@ export const ORGANISATIONS_QUERY = gql`
 
 
 const OrganisationsList = () => {
-  const { loading, error, data } = useQuery<Array<Organisation>>(
+  const { loading, error, data } = useQuery<OrganisationsAndBasesQuery>(
     ORGANISATIONS_QUERY,
   );
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  console.log(data)
+
+  const foo = data?.organisations?.[0]?.name
   return (
-      <UnorderedList>
-          {JSON.stringify(data)}
-      </UnorderedList>
+      <>
+    Test: {foo}
+    </>
   )
 }
   
