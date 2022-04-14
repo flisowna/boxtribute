@@ -28,9 +28,11 @@ export const ORGANISATIONS_QUERY = gql`
 
 const OrganisationsList = () => {
   const { loading, error, data } = useQuery<OrganisationsAndBasesQuery>(ORGANISATIONS_QUERY);
-  const [org, setOrg] = React.useState<Organisation | undefined>(undefined);
+  const [org, setOrg] = React.useState<{ __typename?: 'Organisation', name: string, id: string, bases?: Array<{ __typename?: 'Base', id: string, name: string }> | null } | undefined>(undefined);
+  
 
   const handleOrganisationSelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    // type BarType = data?.organisations;
     
     const selectedOrganisation = event.target.value;
     const filteredOrganisation = data?.organisations?.find(organisation => 
