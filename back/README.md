@@ -84,6 +84,11 @@ We're subject to a rate limit for tokens from Auth0. In order to avoid fetching 
 
 After 24h the token expires, so you have to repeat the procedure.
 
+Furthermore Auth0 public key information can be stored locally to avoid the overhead when the server fetches it every time it receives a request and decodes the JWT. For the boxtribute-dev tenant run
+
+    echo "AUTH0_JWKS_KID=$(curl https://boxtribute-dev.eu.auth0.com/.well-known/jwks.json | jq -r .keys[0].kid)" >> .env
+    echo "AUTH0_JWKS_N=$(curl https://boxtribute-dev.eu.auth0.com/.well-known/jwks.json | jq -r .keys[0].n)" >> .env
+
 ### Linting and Formatting in VSCode
 
 Most of our developers are using VSCode. Instead of running our linter (flake8) and our formatter (black) for Python just when you are committing your code, we added a few settings in `.vscode/settings.json` so that your files are formatted and linted when you save a Python file.
@@ -122,6 +127,19 @@ The `db` docker-compose service runs on a dump (`back/init.sql`) generated from 
 
 From the Python side of the application we use an Object Relational Mapper (ORM) to interact with the database. An ORM provides a convenient abstraction interface since it leverages Python's language features and is more secure compared to using raw SQL queries.
 It was [decided](../docs/adr/Python-ORM.md) to settle with [peewee](https://docs.peewee-orm.com/en/latest/index.html) as ORM solution. It builds on models (see `back/boxtribute_server/models/` as abstraction of the MySQL database tables.
+
+Mind the following perks of peewee:
+
+1. When creating a model instance referencing another model via a foreign key, use the ID of the FK model instance instead of a model instance, e.g. `Location(base=1)`.
+1. If you want to retrieve only the ID of a foreign key field, access it with the "magic" suffix `_id`, e.g. `location.base_id`. This avoids overhead of an additional select query issued by peewee when using `location.base.id`.
+1. You can activate peewee's logging to gain insight into the generated SQL queries:
+```
+import logging
+logger = logging.getLogger("peewee")
+if len(logger.handlers) == 1:
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.DEBUG)
+```
 
 #### Auto-generating peewee model definitions
 
@@ -251,12 +269,14 @@ and inspect the reported output. Open the HTML report via `back/htmlcov/index.ht
 ## GraphQL API
 
 The back-end exposes the GraphQL API in two variants.
-1. The full API is consumed by our front-end at the `/graphql` endpoint (when deployed, it receives the `v2/` prefix since the same base URL as dropapp is used).
+1. The full API is consumed by our front-end at the `/graphql` endpoint (deployed to e.g. `v2-staging` subdomain).
 1. The 'query-only' API is used by our partners at `/` (for data retrieval; it is deployed on the `api*` subdomains).
 
 ### Schema documentation
 
 For building a static web documentation of the schema, see [this directory](../docs/graphql-api).
+
+For the production schema, documentation can be found online at `api.boxtribute.org/docs`.
 
 ### Playground
 
