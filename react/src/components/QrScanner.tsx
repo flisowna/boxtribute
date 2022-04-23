@@ -2,20 +2,47 @@ import { useState } from "react";
 import { QrReader } from "react-qr-reader";
 import { Textarea } from "@chakra-ui/react";
 import { Button, Container } from "@chakra-ui/react";
-
+import { gql, useLazyQuery } from "@apollo/client";
+import {
+  GetBoxIdForQrCodeQuery,
+  GetBoxIdForQrCodeQueryVariables,
+} from "types/generated/graphql";
 
 const extractQrCodeFromUrl = (url) => {
   const rx = /.*barcode=(.*)/g;
   const arr = rx.exec(url);
-  return arr?.[1]; 
-}
+  return arr?.[1];
+};
+
+const GET_BOX_ID_BY_QR_CODE = gql`
+  query GetBoxIdForQrCode($qrCode: String!) {
+    qrCode(qrCode: $qrCode) {
+      box {
+        id
+      }
+    }
+  }
+`;
 
 const QrScanner = (props) => {
-  const [data, setData] = useState("No result");
+  const [qrCode, setQrCode] = useState<string | undefined>("No result");
   const [qrOpen, setQrOpen] = useState(true);
+  const [getBoxIdByQrCode, { loading, error, data }] = useLazyQuery<
+    GetBoxIdForQrCodeQuery,
+    GetBoxIdForQrCodeQueryVariables
+  >(GET_BOX_ID_BY_QR_CODE);
+
+  if (data != null) {
+    alert("HI");
+  }
 
   return (
     <>
+      <div>
+        <div>Loading: {JSON.stringify(loading)}</div>
+        <div>Error: {JSON.stringify(error)}</div>
+        <div>Data: {JSON.stringify(data)}</div>
+      </div>
       <Button
         onClick={() => setQrOpen(!qrOpen)}
         colorScheme="teal"
@@ -24,7 +51,7 @@ const QrScanner = (props) => {
         Scan QR Code
       </Button>
       {qrOpen ? (
-        <Container isOpen={qrOpen} maxW='md'>
+        <Container maxW="md">
           <QrReader
             constraints={{
               facingMode: "user",
@@ -33,10 +60,11 @@ const QrScanner = (props) => {
             onResult={(result, error) => {
               if (!!result) {
                 console.log(result);
-                const qrCode = extractQrCodeFromUrl(result["text"])
-                if(qrCode != null) {
-                  setData(qrCode);
+                const qrCode = extractQrCodeFromUrl(result["text"]);
+                if (qrCode != null) {
+                  getBoxIdByQrCode({ variables: { qrCode } });
                 }
+                setQrCode(qrCode);
               }
 
               if (!!error) {
@@ -48,7 +76,8 @@ const QrScanner = (props) => {
       ) : null}
       <Textarea
         style={{ fontSize: 18, width: 320, height: 100, marginTop: 100 }}
-        value={data}
+        value={qrCode}
+        readOnly
       />
     </>
   );

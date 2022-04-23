@@ -845,6 +845,13 @@ export type BasesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type BasesQuery = { __typename?: 'Query', bases: Array<{ __typename?: 'Base', id: string, name: string }> };
 
+export type GetBoxIdForQrCodeQueryVariables = Exact<{
+  qrCode: Scalars['String'];
+}>;
+
+
+export type GetBoxIdForQrCodeQuery = { __typename?: 'Query', qrCode?: { __typename?: 'QrCode', box?: { __typename?: 'Box', id: string } | null } | null };
+
 export type LocationQueryVariables = Exact<{
   locationId: Scalars['ID'];
 }>;
