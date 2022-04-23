@@ -3,6 +3,13 @@ import { QrReader } from "react-qr-reader";
 import { Textarea } from "@chakra-ui/react";
 import { Button, Container } from "@chakra-ui/react";
 
+
+const extractQrCodeFromUrl = (url) => {
+  const rx = /.*barcode=(.*)/g;
+  const arr = rx.exec(url);
+  return arr?.[1]; 
+}
+
 const QrScanner = (props) => {
   const [data, setData] = useState("No result");
   const [qrOpen, setQrOpen] = useState(true);
@@ -25,8 +32,11 @@ const QrScanner = (props) => {
             scanDelay={1000}
             onResult={(result, error) => {
               if (!!result) {
-                setData(result["text"]);
-                console.log(result["text"]);
+                console.log(result);
+                const qrCode = extractQrCodeFromUrl(result["text"])
+                if(qrCode != null) {
+                  setData(qrCode);
+                }
               }
 
               if (!!error) {
