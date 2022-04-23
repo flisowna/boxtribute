@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QrReader } from "react-qr-reader";
 import { Textarea } from "@chakra-ui/react";
 import { Button, Container } from "@chakra-ui/react";
@@ -7,6 +7,7 @@ import {
   GetBoxIdForQrCodeQuery,
   GetBoxIdForQrCodeQueryVariables,
 } from "types/generated/graphql";
+import { useNavigate } from "react-router-dom";
 
 const extractQrCodeFromUrl = (url) => {
   const rx = /.*barcode=(.*)/g;
@@ -31,10 +32,14 @@ const QrScanner = (props) => {
     GetBoxIdForQrCodeQuery,
     GetBoxIdForQrCodeQueryVariables
   >(GET_BOX_ID_BY_QR_CODE);
+  const navigate = useNavigate();
 
   if (data != null) {
-    alert("HI");
+
   }
+  useEffect(() => {
+      data?.qrCode?.box?.id && navigate(`/boxes/${data.qrCode.box.id}`);
+  }, [data, navigate]);
 
   return (
     <>
