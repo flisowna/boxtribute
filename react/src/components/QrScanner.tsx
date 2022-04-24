@@ -38,11 +38,11 @@ const QrScanner = (props) => {
 
   useEffect(() => {
       data?.qrCode?.box?.labelIdentifier && navigate(`/bases/${baseId}/boxes/${data.qrCode.box.labelIdentifier}`);
-  }, [data, navigate]);
+  }, [baseId, data, navigate]);
 
   return (
     <>
-      <div>
+      {/* <div>
         <div>Loading: {JSON.stringify(loading)}</div>
         <div>Error: {JSON.stringify(error)}</div>
         <div>Data: {JSON.stringify(data)}</div>
@@ -53,7 +53,7 @@ const QrScanner = (props) => {
         variant="outline"
       >
         Scan QR Code
-      </Button>
+      </Button> */}
       {qrOpen ? (
         <Container maxW="md">
           <QrReader
@@ -78,11 +78,11 @@ const QrScanner = (props) => {
           />
         </Container>
       ) : null}
-      <Textarea
+      {/* <Textarea
         style={{ fontSize: 18, width: 320, height: 100, marginTop: 100 }}
         value={qrCode}
         readOnly
-      />
+      /> */}
     </>
   );
 };
