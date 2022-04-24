@@ -47,20 +47,23 @@ const App = () => {
   useLoadAndSetAvailableBases();
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route path="/">
         <Route index element={<AutomaticBaseSwitcher />}></Route>
-        <Route path="scan-qrcode" element={<QrScanner />} />
-        <Route path="boxes">
-          <Route path=":labelIdentifier" element={<BTBox />} />
-        </Route>
-        <Route path="bases">
+        <Route path="bases" element={<Layout />}>
           <Route index element={<AutomaticBaseSwitcher />}></Route>
           <Route path=":baseId">
+            <Route path="scan-qrcode" element={<QrScanner />} />
+            <Route path="boxes">
+              <Route path=":labelIdentifier" element={<BTBox />} />
+            </Route>
             <Route path="locations">
               <Route index element={<BTLocations />} />
-              <Route path=":locationId" element={<BTLocation />} />
+              <Route path=":locationId" element={<BTLocation />}>
+                <Route path="boxes">
+                  <Route index element={<Boxes />} />
+                </Route>
+              </Route>
             </Route>
-            <Route path="boxes" element={<Boxes />} />
           </Route>
         </Route>
       </Route>

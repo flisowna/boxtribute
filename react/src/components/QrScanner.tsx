@@ -7,7 +7,7 @@ import {
   GetBoxLabelIdentifierForQrCodeQuery,
   GetBoxLabelIdentifierForQrCodeQueryVariables,
 } from "types/generated/graphql";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const extractQrCodeFromUrl = (url) => {
   const rx = /.*barcode=(.*)/g;
@@ -34,9 +34,10 @@ const QrScanner = (props) => {
     GetBoxLabelIdentifierForQrCodeQueryVariables
   >(GET_BOX_LABEL_IDENTIFIER_BY_QR_CODE);
   const navigate = useNavigate();
+  const baseId = useParams<{ baseId: string }>().baseId!;
 
   useEffect(() => {
-      data?.qrCode?.box?.labelIdentifier && navigate(`/boxes/${data.qrCode.box.labelIdentifier}`);
+      data?.qrCode?.box?.labelIdentifier && navigate(`/bases/${baseId}/boxes/${data.qrCode.box.labelIdentifier}`);
   }, [data, navigate]);
 
   return (
