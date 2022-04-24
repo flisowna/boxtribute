@@ -54,14 +54,12 @@ const App = () => {
           <Route path=":baseId">
             <Route path="scan-qrcode" element={<QrScanner />} />
             <Route path="boxes">
+                <Route index element={<Boxes />} />
               <Route path=":labelIdentifier" element={<BTBox />} />
             </Route>
             <Route path="locations">
               <Route index element={<BTLocations />} />
               <Route path=":locationId" element={<BTLocation />}>
-                <Route path="boxes">
-                  <Route index element={<Boxes />} />
-                </Route>
               </Route>
             </Route>
           </Route>
