@@ -4,8 +4,8 @@ import { Textarea } from "@chakra-ui/react";
 import { Button, Container } from "@chakra-ui/react";
 import { gql, useLazyQuery } from "@apollo/client";
 import {
-  GetBoxIdForQrCodeQuery,
-  GetBoxIdForQrCodeQueryVariables,
+  GetBoxLabelIdentifierForQrCodeQuery,
+  GetBoxLabelIdentifierForQrCodeQueryVariables,
 } from "types/generated/graphql";
 import { useNavigate } from "react-router-dom";
 
@@ -15,11 +15,12 @@ const extractQrCodeFromUrl = (url) => {
   return arr?.[1];
 };
 
-const GET_BOX_ID_BY_QR_CODE = gql`
-  query GetBoxIdForQrCode($qrCode: String!) {
+const GET_BOX_LABEL_IDENTIFIER_BY_QR_CODE = gql`
+  query GetBoxLabelIdentifierForQrCode($qrCode: String!) {
     qrCode(qrCode: $qrCode) {
       box {
         id
+        labelIdentifier
       }
     }
   }
@@ -29,16 +30,13 @@ const QrScanner = (props) => {
   const [qrCode, setQrCode] = useState<string | undefined>("No result");
   const [qrOpen, setQrOpen] = useState(true);
   const [getBoxIdByQrCode, { loading, error, data }] = useLazyQuery<
-    GetBoxIdForQrCodeQuery,
-    GetBoxIdForQrCodeQueryVariables
-  >(GET_BOX_ID_BY_QR_CODE);
+  GetBoxLabelIdentifierForQrCodeQuery,
+    GetBoxLabelIdentifierForQrCodeQueryVariables
+  >(GET_BOX_LABEL_IDENTIFIER_BY_QR_CODE);
   const navigate = useNavigate();
 
-  if (data != null) {
-
-  }
   useEffect(() => {
-      data?.qrCode?.box?.id && navigate(`/boxes/${data.qrCode.box.id}`);
+      data?.qrCode?.box?.labelIdentifier && navigate(`/boxes/${data.qrCode.box.labelIdentifier}`);
   }, [data, navigate]);
 
   return (
@@ -64,9 +62,9 @@ const QrScanner = (props) => {
             scanDelay={1000}
             onResult={(result, error) => {
               if (!!result) {
-                console.log(result);
                 const qrCode = extractQrCodeFromUrl(result["text"]);
                 if (qrCode != null) {
+                  console.log(qrCode);
                   getBoxIdByQrCode({ variables: { qrCode } });
                 }
                 setQrCode(qrCode);

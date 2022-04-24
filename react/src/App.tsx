@@ -1,4 +1,4 @@
-import 'regenerator-runtime/runtime';
+import "regenerator-runtime/runtime";
 import React, { useContext, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Boxes from "views/Boxes/Boxes";
@@ -7,9 +7,10 @@ import BTLocation from "views/BTLocations/BTLocation";
 import Layout from "components/Layout";
 import AutomaticBaseSwitcher from "views/AutomaticBaseSwitcher/AutomaticBaseSwitcher";
 import { gql, useLazyQuery } from "@apollo/client";
-import  QrScanner  from "components/QrScanner";
+import QrScanner from "components/QrScanner";
 import { BasesQuery } from "types/generated/graphql";
-import { GlobalPreferencesContext } from 'providers/GlobalPreferencesProvider';
+import { GlobalPreferencesContext } from "providers/GlobalPreferencesProvider";
+import BTBox from "views/Box/Box";
 
 const useLoadAndSetAvailableBases = () => {
   const BASES_QUERY = gql`
@@ -21,7 +22,8 @@ const useLoadAndSetAvailableBases = () => {
     }
   `;
 
-  const [runBaseQuery, { loading, data }] = useLazyQuery<BasesQuery>(BASES_QUERY);
+  const [runBaseQuery, { loading, data }] =
+    useLazyQuery<BasesQuery>(BASES_QUERY);
   const { globalPreferences, dispatch } = useContext(GlobalPreferencesContext);
 
   useEffect(() => {
@@ -45,10 +47,13 @@ const App = () => {
   useLoadAndSetAvailableBases();
   return (
     <Routes>
-      <Route path="/">
+      <Route path="/" element={<Layout />}>
         <Route index element={<AutomaticBaseSwitcher />}></Route>
         <Route path="scan-qrcode" element={<QrScanner />} />
-        <Route path="bases" element={<Layout />}>
+        <Route path="boxes">
+          <Route path=":labelIdentifier" element={<BTBox />} />
+        </Route>
+        <Route path="bases">
           <Route index element={<AutomaticBaseSwitcher />}></Route>
           <Route path=":baseId">
             <Route path="locations">
@@ -56,7 +61,6 @@ const App = () => {
               <Route path=":locationId" element={<BTLocation />} />
             </Route>
             <Route path="boxes" element={<Boxes />} />
-            
           </Route>
         </Route>
       </Route>
