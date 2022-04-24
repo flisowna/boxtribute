@@ -29,7 +29,7 @@ const GET_BOX_LABEL_IDENTIFIER_BY_QR_CODE = gql`
 const QrScanner = (props) => {
   const [qrCode, setQrCode] = useState<string | undefined>("No result");
   const [qrOpen, setQrOpen] = useState(true);
-  const [getBoxIdByQrCode, { loading, error, data }] = useLazyQuery<
+  const [getBoxLabelIdentifierByQrCode, { loading, error, data }] = useLazyQuery<
   GetBoxLabelIdentifierForQrCodeQuery,
     GetBoxLabelIdentifierForQrCodeQueryVariables
   >(GET_BOX_LABEL_IDENTIFIER_BY_QR_CODE);
@@ -66,7 +66,7 @@ const QrScanner = (props) => {
                 const qrCode = extractQrCodeFromUrl(result["text"]);
                 if (qrCode != null) {
                   console.log(qrCode);
-                  getBoxIdByQrCode({ variables: { qrCode } });
+                  getBoxLabelIdentifierByQrCode({ variables: { qrCode } });
                 }
                 setQrCode(qrCode);
               }
