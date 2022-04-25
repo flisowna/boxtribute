@@ -1,11 +1,12 @@
 import React from "react"; 
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { Button, Table, Thead, Tr, Th, chakra, Tbody, Td } from "@chakra-ui/react";
-import { Column, useTable, useFilters, useGlobalFilter, useSortBy } from "react-table";
+import { Column, useTable, useFilters, useGlobalFilter, useSortBy, useRowSelect } from "react-table";
 import { ProductRow } from "./types";
 import { GlobalFilter } from "./GlobalFilter";
 import { SelectColumnFilter } from "./SelectColumnFilter";
 import { useNavigate, useParams } from "react-router-dom";
+import IndeterminateCheckbox from "./Checkbox";
 
 type BoxesTableProps = {
     tableData: ProductRow[];
@@ -61,7 +62,26 @@ type BoxesTableProps = {
       },
       useFilters,
       useGlobalFilter,
-      useSortBy
+      useSortBy,
+      useRowSelect,
+    hooks => {
+      hooks.visibleColumns.push(columns => [
+        {
+          id: 'selection',
+          Header: ({ getToggleAllRowsSelectedProps }) => (
+            <div>
+              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            </div>
+          ),
+          Cell: ({ row }) => (
+            <div>
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            </div>
+          ),
+        },
+        ...columns,
+      ])
+    }
     );
   
     return (
@@ -78,7 +98,7 @@ type BoxesTableProps = {
             ) : null,
           ),
         )}
-        <Table>
+        <Table >
           <Thead>
             {headerGroups.map((headerGroup, i) => (
               <Tr {...headerGroup.getHeaderGroupProps()} key={i}>
@@ -103,9 +123,9 @@ type BoxesTableProps = {
             {rows.map((row, i) => {
               prepareRow(row);
               return (
-                <Tr {...row.getRowProps()} onClick={() => navigate(`/bases/${baseId}/boxes/${row.original.labelIdentifier}`)} key={i}>
+                <Tr cursor="pointer" {...row.getRowProps()} onClick={() => navigate(`/bases/${baseId}/boxes/${row.original.labelIdentifier}`)} key={i}>
                   {row.cells.map((cell, i) => {
-                    return <Td bg='tomato' key={i}>{cell.render("Cell")}</Td>;
+                    return <Td key={i}>{cell.render("Cell")}</Td>;
                   })}
                 </Tr>
               );

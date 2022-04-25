@@ -7,4 +7,6 @@ export type ProductRow = {
     size?: string | null;
     state: string;
   };
+
+  
   
