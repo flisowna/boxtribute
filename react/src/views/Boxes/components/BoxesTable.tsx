@@ -1,6 +1,6 @@
 import React from "react"; 
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Button, Table, Thead, Tr, Th, chakra, Tbody, Td } from "@chakra-ui/react";
+import { Button, Table, Thead, Tr, Th, chakra, Tbody, Td, Flex } from "@chakra-ui/react";
 import { Column, useTable, useFilters, useGlobalFilter, useSortBy, useRowSelect } from "react-table";
 import { ProductRow } from "./types";
 import { GlobalFilter } from "./GlobalFilter";
@@ -20,6 +20,7 @@ type BoxesTableProps = {
         {
           Header: "Product",
           accessor: "name",
+          Filter: SelectColumnFilter,
         },
         {
           Header: "Box Number",
@@ -33,6 +34,7 @@ type BoxesTableProps = {
         },
         {
           Header: "Size",
+          Filter: SelectColumnFilter,
           accessor: "size",
         },
         {
@@ -86,18 +88,23 @@ type BoxesTableProps = {
   
     return (
       <>
+      <Flex>
+    
         <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
   
-        {headerGroups.map((headerGroup) =>
-          headerGroup.headers.map((column) =>
+        {headerGroups.map((headerGroup) => {
+          console.log(headerGroup)
+          return headerGroup.headers.map((column) =>
             column.Filter ? (
               <Button m={2} key={column.id}>
                 <label htmlFor={column.id}>{column.render("Header")}: </label>
                 {column.render("Filter")}
               </Button>
             ) : null,
-          ),
+          )}
         )}
+        </Flex>
+        
         <Table >
           <Thead>
             {headerGroups.map((headerGroup, i) => (
