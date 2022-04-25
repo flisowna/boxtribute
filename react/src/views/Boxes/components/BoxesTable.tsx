@@ -5,12 +5,15 @@ import { Column, useTable, useFilters, useGlobalFilter, useSortBy } from "react-
 import { ProductRow } from "./types";
 import { GlobalFilter } from "./GlobalFilter";
 import { SelectColumnFilter } from "./SelectColumnFilter";
+import { useNavigate, useParams } from "react-router-dom";
 
 type BoxesTableProps = {
     tableData: ProductRow[];
   };
   
   const BoxesTable = ({ tableData }: BoxesTableProps) => {
+    const navigate = useNavigate();
+  const baseId = useParams<{ baseId: string }>().baseId!;
     const columns: Column<ProductRow>[] = React.useMemo(
       () => [
         {
@@ -100,9 +103,9 @@ type BoxesTableProps = {
             {rows.map((row, i) => {
               prepareRow(row);
               return (
-                <Tr key={i}>
+                <Tr {...row.getRowProps()} onClick={() => navigate(`/bases/${baseId}/boxes/${row.original.labelIdentifier}`)} key={i}>
                   {row.cells.map((cell, i) => {
-                    return <Td key={i}>{cell.render("Cell")}</Td>;
+                    return <Td bg='tomato' key={i}>{cell.render("Cell")}</Td>;
                   })}
                 </Tr>
               );
@@ -114,3 +117,4 @@ type BoxesTableProps = {
   };
   
   export default BoxesTable;
+  
