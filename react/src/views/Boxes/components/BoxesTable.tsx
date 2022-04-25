@@ -22,8 +22,8 @@ type BoxesTableProps = {
           accessor: "name",
         },
         {
-          Header: "Box ID",
-          accessor: "id",
+          Header: "Box Number",
+          accessor: "labelIdentifier",
         },
         {
           Header: "Gender",
